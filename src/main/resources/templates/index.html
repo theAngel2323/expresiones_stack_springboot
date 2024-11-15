@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluador de Expresiones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #34495e;
+        }
+        form {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            margin-right: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #bdc3c7;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #ecf0f1;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .stack-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #pilas ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #pilas li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .result-container, .stack-container {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+<h1>Evaluador de Expresiones</h1>
+
+<!-- Formulario para crear variables -->
+<form action="/crearVariable" method="post">
+    <label for="nombre">Nombre de Variable:</label>
+    <input type="text" id="nombre" name="nombre" maxlength="12" required>
+    <label for="valor">Valor Inicial:</label>
+    <input type="number" step="any" name="valor" id="valor" required>
+    <button type="submit">Crear Variable</button>
+</form>
+
+<!-- Mostrar mensajes de error -->
+<div class="error" th:if="${error}">
+    <p th:text="${error}"></p>
+</div>
+
+<!-- Listado de Variables -->
+<h2>Variables Almacenadas</h2>
+<table>
+    <tr>
+        <th>Nombre</th>
+        <th>Valor</th>
+    </tr>
+    <!-- Mostrar Variables -->
+    <tr th:each="variable : ${variables}">
+        <td th:text="${variable.key}">Variable</td>
+        <td th:text="${variable.value}">Valor</td>
+    </tr>
+</table>
+
+<!-- Formulario para Evaluar Expresiones -->
+<h2>Evaluar Expresión</h2>
+<form action="/evaluar" method="post">
+    <label for="expresion">Expresión:</label>
+    <input type="text" id="expresion" name="expresion" required>
+    <button type="submit">Evaluar</button>
+</form>
+
+<!-- Resultados -->
+<div class="result-container">
+    <h2>Resultado:</h2>
+    <p th:if="${resultado}" th:text="${resultado}">Aquí aparecerá el resultado de la evaluación.</p>
+</div>
+
+<div class="stack-container">
+    <h2>Contenido de las Pilas</h2>
+    <table>
+        <tr>
+            <th>Operadores</th>
+            <th>Operandos</th>
+        </tr>
+        <tr>
+            <td>
+                <ul>
+                    <!-- Iterar sobre operadores; mostrar mensaje si está vacía -->
+                    <li th:if="${#lists.isEmpty(pilasOperadores)}">No hay operadores en la pila</li>
+                    <li th:each="operador : ${pilasOperadores}" th:text="${operador}">Operador</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <!-- Iterar sobre operandos; mostrar mensaje si está vacía -->
+                    <li th:if="${#lists.isEmpty(pilasOperandos)}">No hay operandos en la pila</li>
+                    <li th:each="operando : ${pilasOperandos}" th:text="${operando}">Operando</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
